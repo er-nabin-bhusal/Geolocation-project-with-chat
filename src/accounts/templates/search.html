@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block head_title %} {{ block.super }} | Search Results {% endblock head_title %}
+
+{% block content %}
+<ul>
+{% for element in matches %}
+	{% if element.user != request.user %}
+		<li><a href="{{ element.get_absolute_url }}">{{ element }}</a></li>
+	{% endif %}
+{% endfor  %}
+</ul>
+
+
+{% endblock content %}

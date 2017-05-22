@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block head_title %} {{ block.super }} | {{ title }}{% endblock head_title %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+
+<div class="col-sm-7">
+	<h1>{{ title }}</h1>
+	{% if request.user.is_authenticated %}
+	<form method="POST" action='' enctype="multipart/form-data">{% csrf_token %}
+	{{ form | crispy }}
+
+	<!-- under this we get latitude and longitude -->
+	{% if location_form %}
+		{{ location_form | crispy }} 
+	{% endif %}
+
+
+	<button class="btn btn-default" type="submit">Submit</button>
+	</form>
+	{% else %}
+	<h4> You are not logged in !</h4>
+	{% endif %}
+
+{% endblock content %}

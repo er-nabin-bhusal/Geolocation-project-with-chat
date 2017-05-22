@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Chatting window </h1>
+<ul style="list-style-type: none;">
+{% for messages in message_list %}
+	{% if messages.sender == request.user %}
+	<li class="well well-sm" style="text-align: right;">{{ messages.message }} : <a href='{{ messages.sender.profile.get_absolute_url }}'>{{ messages.sender.first_name }} {{ messages.sender.last_name }}</a></li><br>
+	{% else %}
+	<li class="well well-sm"><a href='{{ messages.sender.profile.get_absolute_url }}'>{{ messages.sender.first_name }} {{ messages.sender.last_name }}</a>:{{ messages.message }}</li><br>
+	{% endif %}
+{% endfor %}
+</ul>
+<form method="POST" action=''>{% csrf_token %}
+ {{ form }}
+<button type="submit">Send</button>
+</form>
+<br><br><br>
+{% endblock content %}

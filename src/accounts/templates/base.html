@@ -1,0 +1,89 @@
+<!Doctype html>
+{% load static %}
+<html lang="en-us">
+	<head>
+		<title>{% block head_title %}My Match {% endblock head_title %}</title>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+		<link rel="stylesheet" href="{% static 'base.css' %}"/>
+		</head>
+
+	<body>
+	{% include 'messages.html' %}
+	<div class="container">
+	  	<ul class="breadcrumb">
+	        <li><a href="{% url 'home' %}">Home</a></li>
+	        {% if not request.user.is_authenticated %}
+	        <li class="pull-right"><a href="{% url 'register' %}">Register</a></li>
+	        <li class="pull-right"><a href="{% url 'login' %}">Login</a></li>
+	        {% else %}
+	        <li class="pull-right"><a href="{% url 'logout' pk=user.pk %}">Logout</a></li>
+	        {% endif %}
+	    </ul>
+
+	    <!-- <button onclick="getLocation()">Try It</button> -->
+
+	{% block content %}
+
+	{% endblock content %}
+	</div>
+
+
+	<!-- Latest compiled and minified JavaScript -->
+<script   src="http://code.jquery.com/jquery-1.12.2.min.js"   integrity="sha256-lZFHibXzMHo3GGeehn1hudTAP3Sc0uKXBXAzHX1sjtk="   crossorigin="anonymous"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+<script type="text/javascript"> 
+getLocation();
+
+var x = document.getElementById("id_latitude"); 
+var y = document.getElementById("id_longitude");
+var z = document.getElementById("error");
+
+function getLocation() {
+    if (navigator.geolocation)
+    {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    }
+     else 
+    { 
+        z.innerHTML = "Geolocation is not supported by this browser.";
+    }
+}
+
+function showPosition(position) 
+{
+    x.value = position.coords.latitude; 
+    y.value = position.coords.longitude;
+}
+
+</script>
+
+<!-- for_ jquery for_ search -->
+<script>
+	$(document).ready(function(){
+
+		$(".search-input-box").click(function(){
+	        $("#searches").fadeToggle();
+	    })
+	})
+</script>
+
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+

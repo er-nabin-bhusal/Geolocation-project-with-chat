@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block head_title %} {{ block.super }} | {{ instance }}{% endblock head_title %}
+
+{% block content %}
+
+
+<div class="col-sm-offset-3 col-sm-6">
+
+{% if instance.user.first_name and instance.user.last_name %}
+	<h3> 
+	{{ instance.user.first_name }} {{ instance.user.last_name }}<h3> {% else %} <h3>{{ instance.user.username }}
+	</h3>
+{% endif %}
+{% if request.user == instance.user %}
+<a href="{% url 'edit' pk=instance.pk %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-edit">Edit</button></a>
+{% endif %}
+<h4><small> {{ instance.bio }} </small></h4><br><br>
+
+
+<!-- For search bro  -->
+
+<div class="row">
+		<form method="GET" action=''>{% csrf_token %}
+
+			<div class="col-sm-6 col-sm-offset-6">
+				<a class="search-input-box">Search</a>
+
+				<div id="searches">
+					<label for="sel1">Select Radius (In Km):</label>
+				      <select  name="q" value={{ request.GET.q }} class="form-control" id="sel1">
+				        <option>1</option>
+				        <option>2</option>
+				        <option>3</option>
+				        <option>4</option>
+				        <option>5</option>
+				        <option>6</option>
+
+				      </select>
+					<button class="btn btn-default" type="submit">
+						<span class="glyphicon glyphicon-search"></span>
+						Search
+					</button>
+			    </div>
+
+			</div>
+		</form>
+</div>
+
+
+
+<h5><strong>Email Address: </strong> {{ instance.user.email }}</h5>
+<h5><strong>Phone Number: </strong> {{ instance.phone_no }}</h5>
+<h5><strong>Birth Date: </strong> {{ instance.birth_date }}</h5>
+<h5><strong>Gender: </strong> {{ instance.gender }}</h5>
+
+</div>
+
+{% if not instance.user == request.user %}
+	<form method="POST" action=''>{% csrf_token %}
+	<div style="display: none;">
+	 {{ chat_form }}
+	 </div>
+	<button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-heart"></span>Chat</button>
+	</form>
+{% endif %}
+{% endblock content %}
+
+
+
+
+
+
+
