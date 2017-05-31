@@ -129,8 +129,7 @@ def home_view(request, pk=None):
 def profile_update_view(request,pk):
 	if not request.user.is_authenticated or not request.user.is_active:
 		raise Http404 
-	user = User.objects.get(pk=pk)
-	instance = get_object_or_404(Profile,user=user)
+	instance = get_object_or_404(Profile,pk=pk)
 	if request.user == instance.user:
 		form = ProfileForm(request.POST or None, request.FILES or None, instance=instance)
 		if form.is_valid():
