@@ -26,6 +26,10 @@ from accounts.views import (
         search_view,
         )
 
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
   	url(r'^register/$', register_view, name='register'),
@@ -39,3 +43,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/', include('chats.urls', namespace='chats')),
     url(r'^$', home_view, name='home'),
     ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -13,6 +13,12 @@
 		</head>
 
 	<body>
+		<div class="jumbotron">
+                <h2><a href="{% url 'home' %}" style="color:deeppink;">My Match</a></h2>
+        </div>
+
+
+
 	{% include 'messages.html' %}
 	<div class="container">
 	  	<ul class="breadcrumb">
@@ -66,14 +72,19 @@ function showPosition(position)
 </script>
 
 <!-- for_ jquery for_ search -->
-<script>
+<!-- <script>
 	$(document).ready(function(){
 
 		$(".search-input-box").click(function(){
 	        $("#searches").fadeToggle();
 	    })
+
+	    $(".photo-upload").click(function(){
+	        $("#photo-form").fadeToggle();
+	    })
+
 	})
-</script>
+</script> -->
 
 	</body>
 </html>

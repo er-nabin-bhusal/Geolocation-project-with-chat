@@ -32,7 +32,9 @@ from chats.models import ChatClass , MessageClass
 from chats.forms import ChatForm,MessageForm
 
 
-
+# for_ photo
+from photos.models import Picture
+from photos.forms import PictureForm
 
 User = get_user_model()
 
@@ -166,7 +168,9 @@ def profile_detail_view(request,pk):
 		group = chat_form.save(commit=False)
 		user = User.objects.all()
 		group.owner = request.user
-		group.opponent = User.objects.get(pk=pk)
+		print("first")
+		group.opponent = instance.user
+
 		chat_obj = ChatClass.objects.filter(owner=group.opponent,opponent=group.owner)
 		if not chat_obj.exists():
 			chat_obj = ChatClass.objects.filter(owner=group.owner,opponent=group.opponent)
@@ -178,7 +182,29 @@ def profile_detail_view(request,pk):
 		return redirect('chats:chat',pk1=chat_obj.first().pk,pk=pk)
 
 
+
+	# for_ photo upload
+	photo_form = PictureForm(request.POST or None,request.FILES or None)
+	if photo_form.is_valid() and request.user.is_authenticated():
+		photo = photo_form.save(commit=False)
+		photo.user = instance
+		photo.save()
+		return redirect("/")
+
+	# for_ photo show
+	all_photo = Picture.objects.filter(user=instance)
+
+
+	# profiles pictures
+	profile_pic = None
+	profile_picture = all_photo.filter(profile_check=True)
+	if profile_picture.exists():
+		profile_pic = profile_picture.first()
+
 	context = {
+	'profile_pic':profile_pic,
+	'all_photo':all_photo,
+	'photo_form':photo_form,
 	'chat_form':chat_form,
 	'instance':instance,
 	'user':user,
