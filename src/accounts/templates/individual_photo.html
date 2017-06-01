@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block head_title %} {{ block.super }} | Photo {% endblock head_title %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+    <div class="thumbnail">
+      <img src="{{ photo.photo.url }}" class="img-responsive" alt="Responsive image">
+      <div class="caption">
+        <p>{{ photo.caption }}</p>
+        <p><a href="{% url 'photos:propic' pk=pk pk1=photo.pk %}">Make it Profile Picture</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock content %}

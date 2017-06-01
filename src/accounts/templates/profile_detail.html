@@ -58,13 +58,13 @@
 
         </div>
 
-        
+        <!-- all photos -->
         <div id="photos" class="tab-pane fade">
 	        {% if all_photo %}
 	            <div class="row">
 	            	 {% for photos in all_photo.all %}
 				  <div class="col-xs-6 col-md-6">
-				    <a href="#" class="thumbnail">
+				    <a href="{{ photos.get_absolute_url }}" class="thumbnail">
 				    	<img class="img-responsive" src="{{ photos.photo.url }}" alt="{{ photos }}">
 				     	{{ photos.caption }}
 				    </a>

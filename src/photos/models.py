@@ -6,6 +6,7 @@ from django.db import models
 # Create your models here.
 
 from accounts.models import Profile 
+from django.core.urlresolvers import reverse
 
 
 def upload_location(instance,filename):
@@ -27,3 +28,6 @@ class Picture(models.Model):
 		return "%s-%s" % (self.user,self.caption)
 
 	def get_absolute_url(self):
+		temp = self.user
+		return reverse("photos:photo", kwargs={"pk1": self.pk,"pk":temp.pk})
+
