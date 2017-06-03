@@ -27,6 +27,7 @@ class MessageClass(models.Model):
 	user_set = models.ForeignKey(ChatClass,related_name="didicatedusers")
 	message = models.CharField(max_length=200)
 	timestamp = models.DateTimeField(auto_now_add=True,null=True)
+	seen_case = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return "sender is %s in the group %s" %(self.sender,self.user_set)

@@ -253,9 +253,26 @@ def profile_detail_view(request,pk):
 
 
 	# all_ of the chatlists
-	
+	unseen_msg_count = 0
+	message_list = []
+	unseen_msgs = []
+	unseen_msg = None
+	for one in match_list:
+		msg = MessageClass.objects.filter(user_set=one)
+		for i in msg:
+			if i.seen_case == False:
+				unseen_msgs.append(i)
+				unseen_msg_count= unseen_msg_count+1
+		if msg.count() != 0:
+			message_list.append(one)
+
+	if unseen_msg_count > 0:
+		unseen_msg = unseen_msgs[0]
 
 	context = {
+	'unseen_msg':unseen_msg,
+	'unseen_msg_count':unseen_msg_count,
+	'message_list':message_list,
 	'all_matches':all_matches,
 	'chat_obj_':chat_obj_,
 	'chat_obj':chat_obj,

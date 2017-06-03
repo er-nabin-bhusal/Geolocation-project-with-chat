@@ -1,4 +1,8 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import (
+					render,
+					redirect,
+					get_object_or_404,
+					)
 from chats.models import ChatClass , MessageClass
 from django.contrib.auth import get_user_model
 
@@ -13,25 +17,42 @@ User = get_user_model()
 
 
 def chat_view(request,pk1=None,*args,**kwargs):
-	chat_group = ChatClass.objects.get(pk=pk1)
+
+	# chat_group = ChatClass.objects.get(pk=pk1)
+	chat_group = get_object_or_404(ChatClass,pk=pk1)
 	message_list = MessageClass.objects.filter(user_set=chat_group).order_by("timestamp")
-	user = request.user 
-	form = MessageForm(request.POST or None)
+
+	for msg in message_list:
+		if request.user != msg.sender:
+			msg.seen_case=True
+			msg.save()
 
 
-	if form.is_valid() and user.is_authenticated():
-		message = form.save(commit=False)
-		message.sender = user
-		qs_ = ChatClass.objects.get(pk=pk1)
-		message.user_set = qs_
-		message.save()
-		
-	context = {
-		'form':form,
-		'message_list':message_list,
-	}
+	if request.user == chat_group.owner or request.user == chat_group.opponent:
+		for msg in message_list:
+			if request.user != msg.sender:
+				msg.seen_case=True
+				msg.save()
+			
+		user = request.user 
+		form = MessageForm(request.POST or None)
 
-	return render(request,"chat.html",context)
+
+		if form.is_valid() and user.is_authenticated():
+			message = form.save(commit=False)
+			message.sender = user
+			qs_ = ChatClass.objects.get(pk=pk1)
+			message.user_set = qs_
+			message.save()
+			
+		context = {
+			'form':form,
+			'message_list':message_list,
+		}
+
+		return render(request,"chat.html",context)
+	else:
+		raise Http404("There is no such request!")
 
 def request_accept_view(request,pk1,*args,**kwargs):
 	request_obj = ChatClass.objects.get(pk=pk1)

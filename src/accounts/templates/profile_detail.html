@@ -46,22 +46,22 @@
 	{% if chat_obj %}
 		{% if chat_obj.friends == True %}
 		<!-- when users are friends -->
-		<a href="" class="btn btn-success"><span class="glyphicon glyphicon-heart"></span> Matched</a>
-		<a href="" class="btn btn-default"><span class="glyphicon glyphicon-envelope"></span>Send Message</a>
+		<p class="btn btn-success"><span class="glyphicon glyphicon-heart"></span> Matched</p>
+		<a href="{% url 'chats:chat' pk1=chat_obj.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-envelope"></span>Send Message</a>
 		{% else %}
-		<a href="" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span>Requested</a>
+		<p class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span>Requested</p>
 		{% endif %}
 
 	{% endif %}
 
 	{% if chat_obj_ %}
 		{% if chat_obj_.friends == True %}
-			<a href="" class="btn btn-success"><span class="glyphicon glyphicon-heart"></span> Matched</a>
+			<p class="btn btn-success"><span class="glyphicon glyphicon-heart"></span> Matched</p>
 			<!-- when the user is friends -->
-			<a href="" class="btn btn-default"><span class="glyphicon glyphicon-envelope"></span>Send Message</a>
+			<a href="{% url 'chats:chat' pk1=chat_obj_.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-envelope"></span>Send Message</a>
 		{% else %}
-			<a href="{% url 'chats:accept' pk=instance.pk pk1=chat_obj_.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span>Accept Match</a>
-			<a href="{% url 'chats:deny' pk=instance.pk pk1=chat_obj_.pk %}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>Deny Match</a>
+			<a href="{% url 'chats:accept' pk1=chat_obj_.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span>Accept Match</a>
+			<a href="{% url 'chats:deny' pk1=chat_obj_.pk %}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>Deny Match</a>
 		{% endif %}
 	{% endif %}
 {% endif %}
@@ -77,7 +77,11 @@
       	<li><a data-toggle="tab" href="#upload">Photo Upload</a></li>
       	<li><a data-toggle="tab" href="#notifications">Notifications</a></li>
       	<li><a data-toggle="tab" href="#matches">Matches</a></li>
-      	<li><a data-toggle="tab" href="#chats">Chats</a></li>
+      	<li><a data-toggle="tab" href="#chats">Chats{% if unseen_msg_count != 0 %}
+						{% if unseen_msg.sender != request.user %}
+						<span class="badge" style="background-color: red;">{{ unseen_msg_count }}</span>
+						{% endif %}
+						{% endif %}</a></li>
       	{% endif %}
     </ul>
 
@@ -110,6 +114,7 @@
 
         </div>
 
+        {% if request.user == instance.user %}
         <!-- For search bro  -->
 		<div id="location" class="tab-pane fade">
 			{% if request.user == instance.user %}
@@ -184,9 +189,40 @@
 		<!-- all the chat list  -->
 
 		<div id="chats" class="tab-pane fade">
+			{% for each in message_list %}
+			{% if request.user != each.owner %}
+			<a href="{% url 'chats:chat' pk1=each.pk %}">
+				<div class="well"><h5>
+					{{ each.owner.first_name }} {{ each.owner.last_name }}
+					{% if unseen_msg_count != 0 %}
+					{% if unseen_msg.sender != request.user %}
+						<span class="badge" style="background-color: red;">{{ unseen_msg_count }}</span>
+						{% endif %}
+						{% endif %}
+						<br><small>- see messages of {{ each.owner.first_name }}</small></h5>
+				</div>
+			</a>
+			{% endif %}
 
+			{% if request.user != each.opponent %}
+			<a href="{% url 'chats:chat' pk1=each.pk %}">
+				<div class="well">
+					<h5>
+						{{ each.opponent.first_name }} {{ each.opponent.last_name }}
+						{% if unseen_msg_count != 0 %}
+						{% if unseen_msg.sender != request.user %}
+						<span class="badge" style="background-color: red;">{{ unseen_msg_count }}</span>
+						{% endif %}
+						{% endif %}
+						<br><small>- see messages of {{ each.opponent.first_name }}</small>
+					</h5>
+				</div>
+			</a>
+			{% endif %}
 
+			{% endfor %}
 		</div>
+		{% endif %}
 
     </div>
  </div>
