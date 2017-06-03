@@ -10,7 +10,9 @@
       <img src="{{ photo.photo.url }}" class="img-responsive" alt="Responsive image">
       <div class="caption">
         <p>{{ photo.caption }}</p>
-        <p><a href="{% url 'photos:propic' pk=pk pk1=photo.pk %}">Make it Profile Picture</a></p>
+        {% if request.user == owner.user %}
+        <p><a href="{% url 'photos:propic' pk=owner.pk pk1=photo.pk %}">Make it Profile Picture</a></p>
+        {% endif %}
       </div>
     </div>
   </div>

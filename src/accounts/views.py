@@ -36,6 +36,8 @@ from chats.forms import ChatForm,MessageForm
 from photos.models import Picture
 from photos.forms import PictureForm
 
+from notifications.models import NotifyUser
+
 User = get_user_model()
 
 def register_view(request):
@@ -151,6 +153,8 @@ def profile_update_view(request,pk):
 
 def profile_detail_view(request,pk):
 
+	logged_in_profile = Profile.objects.filter(user=request.user) #this is logged in profile
+	logged_in_profile = logged_in_profile.first()
 
 	instance = get_object_or_404(Profile,pk=pk)
 	if not request.user.is_authenticated:
@@ -158,28 +162,43 @@ def profile_detail_view(request,pk):
 	user = instance.user 
 
 	query = request.GET.get("q")
-	print(query)
 	if query:
 		return redirect('search',pk=pk,query=query)
 
-	# for_ chat head
-	chat_form = ChatForm(request.POST or None)
-	if chat_form.is_valid() and request.user.is_authenticated():
-		group = chat_form.save(commit=False)
-		user = User.objects.all()
-		group.owner = request.user
-		print("first")
-		group.opponent = instance.user
+	# sending request to new account 
+	chat_obj = None
+	chat_obj_ = None
+	chat_form = None
+	
+	if not request.user == instance.user:
+		obj = ChatClass.objects.filter(owner=request.user,opponent=instance.user)
+		chat_obj = obj.first()
+		if obj.count() == 0:
+			obj_ = ChatClass.objects.filter(owner=instance.user,opponent=request.user)
+			chat_obj_ = obj_.first()
 
-		chat_obj = ChatClass.objects.filter(owner=group.opponent,opponent=group.owner)
-		if not chat_obj.exists():
-			chat_obj = ChatClass.objects.filter(owner=group.owner,opponent=group.opponent)
-			
-		if not chat_obj.exists():
-			print("doesnt exist")
-			group.save()
-			return redirect('chats:chat',pk1=group.pk,pk=pk)
-		return redirect('chats:chat',pk1=chat_obj.first().pk,pk=pk)
+			if obj_.count() == 0:
+				chat_form = ChatForm(request.POST or None)
+				if chat_form.is_valid() and request.user.is_authenticated():
+					group = chat_form.save(commit=False)
+					user = User.objects.all()
+					group.owner = request.user
+					group.opponent = instance.user
+
+					chat_obj = ChatClass.objects.filter(owner=group.opponent,opponent=group.owner)
+					if chat_obj.exists():
+						chat_obj = ChatClass.objects.filter(owner=group.owner,opponent=group.opponent)
+						
+					if not chat_obj.exists():
+						# raising notification
+						sender = Profile.objects.get(user=request.user)
+						receiver = Profile.objects.get(pk=pk)
+						notice = NotifyUser.objects.create(text="has send request",sender=sender,receiver=receiver)
+						notice.save()
+
+						group.save()
+						return redirect("/")
+					return redirect("/")
 
 
 
@@ -201,7 +220,47 @@ def profile_detail_view(request,pk):
 	if profile_picture.exists():
 		profile_pic = profile_picture.first()
 
+
+	# getting the notification in_ the profile_ view
+	unseen_notices_count = None;
+	notices = NotifyUser.objects.filter(receiver=logged_in_profile)
+	if notices != None:
+		unseen_notices = notices.filter(seen_or_not=False) #getting unseen notifications
+		if unseen_notices != None:
+			unseen_notices_count = unseen_notices.count()
+
+	# matches of the requested user
+	match_list1 = ChatClass.objects.filter(owner=request.user)
+	match_list2 = ChatClass.objects.filter(opponent=request.user)
+	match_list3 = []
+	match_list3.extend(match_list1)
+	match_list3.extend(match_list2)
+	match_list = []
+	for each in match_list3:
+		if each.friends == True:
+			match_list.append(each)
+
+	all_matches = []
+	for match in match_list:
+		opponent = match.opponent
+		owner = match.owner
+		if request.user != opponent:
+			us = Profile.objects.get(user=opponent)
+			all_matches.append(us)
+		if request.user != owner:
+			us = Profile.objects.get(user=owner)
+			all_matches.append(us)
+
+
+	# all_ of the chatlists
+	
+
 	context = {
+	'all_matches':all_matches,
+	'chat_obj_':chat_obj_,
+	'chat_obj':chat_obj,
+	'notices':notices,
+	'unseen_notices_count':unseen_notices_count,
 	'profile_pic':profile_pic,
 	'all_photo':all_photo,
 	'photo_form':photo_form,
@@ -227,6 +286,7 @@ def search_view(request,pk,query):
 			matches.append(obj2)
 		else: 
 			continue
+
 	context ={
 			'matches':matches,
 			}

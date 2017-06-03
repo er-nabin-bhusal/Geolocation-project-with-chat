@@ -11,7 +11,8 @@ class ChatClass(models.Model):
 	owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner') #this is done to avoid errors with dual foreignkeys
 	opponent = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='opponent')
 	timestamp = models.DateTimeField(auto_now=False,auto_now_add=True,)
-	anything = models.CharField(max_length=100,default="hey whats up")
+	anything = models.CharField(max_length=100,default="Can we be Friends?")
+	friends = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return "send from %s to %s" % (self.owner,self.opponent)

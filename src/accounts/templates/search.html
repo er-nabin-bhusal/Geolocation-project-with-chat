@@ -3,13 +3,21 @@
 {% block head_title %} {{ block.super }} | Search Results {% endblock head_title %}
 
 {% block content %}
-<ul>
-{% for element in matches %}
-	{% if element.user != request.user %}
-		<li><a href="{{ element.get_absolute_url }}">{{ element }}</a></li>
-	{% endif %}
-{% endfor  %}
-</ul>
-
+<div class="row">
+	<div class="col-xs-6 col-md-3">
+	{% for element in matches %}
+		{% if element.user != request.user %}
+		<a href="{{ element.get_absolute_url }}" class="thumbnail">
+		{% for some in element.picture_set.all %}
+		{% if some.profile_check == True %}
+	  		<img src="{{ some.photo.url }}" alt="{{ some.caption }}">
+	  		{{ element.user }}
+		{% endif %}
+		{% endfor %}
+		</a>
+		{% endif %}
+	{% endfor  %}
+	</div>
+</div>
 
 {% endblock content %}
