@@ -20,6 +20,19 @@ class ChatClass(models.Model):
 	def __str__(self):
 		return "send from %s to %s" % (self.owner,self.opponent)
 
+	def get_unseen_msg(self,s):
+		obj_list = MessageClass.objects.filter(user_set=self)
+		obj_list.filter(seen_case=False)
+		obj_list1 = []
+		for each in obj_list:
+			if each.sender != s:
+				obj_list1.append(each)
+		if obj_list1.count(obj_list1) != 0:
+			return obj_list1.count(obj_list1)
+			print("c")
+			print(obj_list1.count(obj_list1))
+		else:
+			return 0
 
 
 class MessageClass(models.Model):
@@ -34,3 +47,5 @@ class MessageClass(models.Model):
 
 	def __str__(self):
 		return "sender is %s in the group %s" %(self.sender,self.user_set)
+
+

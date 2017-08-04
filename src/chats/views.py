@@ -44,12 +44,10 @@ def chat_view(request,pk1=None,*args,**kwargs):
 			qs_ = ChatClass.objects.get(pk=pk1)
 			message.user_set = qs_
 			message.save()
-			
 		context = {
 			'form':form,
 			'message_list':message_list,
 		}
-
 		return render(request,"chat.html",context)
 	else:
 		raise Http404("There is no such request!")

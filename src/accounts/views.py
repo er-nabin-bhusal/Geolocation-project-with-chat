@@ -23,7 +23,7 @@ from django.http import Http404,HttpResponseRedirect
 from .models import Profile
 
 from django.contrib import messages 
-from accounts.utils import comparelocation
+from accounts.utils import comparelocation,recommendation
 
 
 # for_ chat 
@@ -95,7 +95,6 @@ def profile_create_view(request,pk):
 		raise Http404
 
 	user = request.user # to get the user which is logged in 
-	# print(user)
 
 	profile = Profile.objects.filter(user=user) # checking whether the requested user exists 
 
@@ -235,12 +234,12 @@ def profile_detail_view(request,pk):
 	match_list3 = []
 	match_list3.extend(match_list1)
 	match_list3.extend(match_list2)
-	match_list = []
+	match_list = [] #it holds the match list
 	for each in match_list3:
 		if each.friends == True:
 			match_list.append(each)
 
-	all_matches = []
+	all_matches = [] # it has all the users that are matched with the logged in.
 	for match in match_list:
 		opponent = match.opponent
 		owner = match.owner
@@ -254,23 +253,18 @@ def profile_detail_view(request,pk):
 
 	# all_ of the chatlists
 	unseen_msg_count = 0
-	message_list = []
-	unseen_msgs = []
-	unseen_msg = None
+	message_list = [] # it holds all the chatclass that has conversations
 	for one in match_list:
+		unseen_msg_count = one.get_unseen_msg(request.user) + unseen_msg_count
 		msg = MessageClass.objects.filter(user_set=one)
-		for i in msg:
-			if i.seen_case == False:
-				unseen_msgs.append(i)
-				unseen_msg_count= unseen_msg_count+1
 		if msg.count() != 0:
 			message_list.append(one)
 
-	if unseen_msg_count > 0:
-		unseen_msg = unseen_msgs[0]
+
+	# recommendations only
+	recommend_list = recommendation(user)
 
 	context = {
-	'unseen_msg':unseen_msg,
 	'unseen_msg_count':unseen_msg_count,
 	'message_list':message_list,
 	'all_matches':all_matches,
@@ -284,6 +278,7 @@ def profile_detail_view(request,pk):
 	'chat_form':chat_form,
 	'instance':instance,
 	'user':user,
+	'recommend_list':recommend_list,
 	}
 
 	return render(request,"profile_detail.html",context)
@@ -291,14 +286,12 @@ def profile_detail_view(request,pk):
 
 def search_view(request,pk,query):
 	profiles = Profile.objects.all()
-	print(profiles)
 	obj1 = profiles.get(pk=pk)
 	query = float(query)*1000
 	matches = []
 	
 	for obj2 in profiles:
 		result = comparelocation(obj1,obj2)
-		print(result)
 		if result <= query:
 			matches.append(obj2)
 		else: 

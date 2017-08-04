@@ -60,6 +60,7 @@ class UserLoginForm(forms.Form):
 
 class ProfileForm(forms.ModelForm):
 	birth_date = forms.DateField(widget=forms.SelectDateWidget)
+	height = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder':'Enter in Centimeters.'}))
 	class Meta:
 		model = Profile
 		fields = [
@@ -67,6 +68,10 @@ class ProfileForm(forms.ModelForm):
 				'birth_date',
 				'gender',
 				'bio',
+				'marital_status',
+				'religion',
+				'qualification',
+				'height',
 				'latitude',
 				'longitude',
 				]

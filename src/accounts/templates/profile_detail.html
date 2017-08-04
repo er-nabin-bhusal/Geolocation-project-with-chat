@@ -5,8 +5,8 @@
 {% block content %}
 {% load crispy_forms_tags %}
 
-
-<div class="col-sm-offset-3 col-sm-6">
+<div class="row">
+<div class="col-sm-offset-2 col-sm-6">
 
 	<!-- profile picture -->
 	<div>
@@ -27,6 +27,24 @@
 		<h4><small> {{ instance.bio }} </small></h4><br><br>
 	</div>
 
+</div>
+{% if request.user == instance.user %}
+<div class="col-sm-offset-1 col-sm-3">
+<h5>Recommendations:</h5>
+	{% for element in recommend_list %}
+		{% if element.user != request.user %}
+		<a href="{{ element.get_absolute_url }}" class="thumbnail">
+		{% for some in element.picture_set.all %}
+		{% if some.profile_check == True %}
+	  		<img src="{{ some.photo.url }}" alt="{{ some.caption }}">
+	  		{{ element.user }}
+		{% endif %}
+		{% endfor %}
+		</a>
+		{% endif %}
+	{% endfor  %}	
+</div>
+{% endif %}
 </div>
 
 <!-- add friend here -->
@@ -77,11 +95,12 @@
       	<li><a data-toggle="tab" href="#upload">Photo Upload</a></li>
       	<li><a data-toggle="tab" href="#notifications">Notifications</a></li>
       	<li><a data-toggle="tab" href="#matches">Matches</a></li>
-      	<li><a data-toggle="tab" href="#chats">Chats{% if unseen_msg_count != 0 %}
-						{% if unseen_msg.sender != request.user %}
-						<span class="badge" style="background-color: red;">{{ unseen_msg_count }}</span>
-						{% endif %}
-						{% endif %}</a></li>
+      	<li><a data-toggle="tab" href="#chats">
+      			Chats{% if unseen_msg_count != 0 %}
+				<span class="badge" style="background-color: red;">{{ unseen_msg_count }}</span>
+				{% endif %}
+			</a>
+		</li>
       	{% endif %}
     </ul>
 
@@ -92,6 +111,12 @@
 			<h5><strong>Phone Number: </strong> {{ instance.phone_no }}</h5>
 			<h5><strong>Birth Date: </strong> {{ instance.birth_date }}</h5>
 			<h5><strong>Gender: </strong> {{ instance.gender }}</h5>
+			<h5><strong>Marital Status: </strong>{{ instance.marital_status }}</h5>
+			<h5><strong>Religion: </strong>{{ instance.religion }}</h5>
+			<h5><strong>Qualification: </strong>{{ instance.qualification }}</h5>
+			<h5><strong>Height: </strong>{{ instance.height }} Cm.</h5>
+
+
 
         </div>
 
@@ -189,16 +214,14 @@
 		<!-- all the chat list  -->
 
 		<div id="chats" class="tab-pane fade">
-			{% for each in message_list %}
+		{% for each in message_list %}
 			{% if request.user != each.owner %}
 			<a href="{% url 'chats:chat' pk1=each.pk %}">
 				<div class="well"><h5>
 					{{ each.owner.first_name }} {{ each.owner.last_name }}
-					{% if unseen_msg_count != 0 %}
-					{% if unseen_msg.sender != request.user %}
-						<span class="badge" style="background-color: red;">{{ unseen_msg_count }}</span>
-						{% endif %}
-						{% endif %}
+					{% if each.get_unseen_msg != 0 %}
+						<span class="badge" style="background-color: red;"></span>
+					{% endif %}
 						<br><small>- see messages of {{ each.owner.first_name }}</small></h5>
 				</div>
 			</a>
@@ -209,18 +232,15 @@
 				<div class="well">
 					<h5>
 						{{ each.opponent.first_name }} {{ each.opponent.last_name }}
-						{% if unseen_msg_count != 0 %}
-						{% if unseen_msg.sender != request.user %}
-						<span class="badge" style="background-color: red;">{{ unseen_msg_count }}</span>
-						{% endif %}
+						{% if each.get_unseen_msg != 0 %}
+						<span class="badge" style="background-color: red;"></span>
 						{% endif %}
 						<br><small>- see messages of {{ each.opponent.first_name }}</small>
 					</h5>
 				</div>
 			</a>
 			{% endif %}
-
-			{% endfor %}
+		{% endfor %}
 		</div>
 		{% endif %}
 
