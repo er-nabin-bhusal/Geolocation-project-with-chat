@@ -38,6 +38,7 @@ from photos.forms import PictureForm
 
 from notifications.models import NotifyUser
 
+
 User = get_user_model()
 
 def register_view(request):
@@ -160,10 +161,6 @@ def profile_detail_view(request,pk):
 		raise Http404
 	user = instance.user 
 
-	query = request.GET.get("q")
-	if query:
-		return redirect('search',pk=pk,query=query)
-
 	# sending request to new account 
 	chat_obj = None
 	chat_obj_ = None
@@ -264,6 +261,18 @@ def profile_detail_view(request,pk):
 	# recommendations only
 	recommend_list = recommendation(user)
 
+	# this takes the location search value from user.
+	query = request.GET.get("q")
+	religion = request.GET.get("religion")
+	age = request.GET.get("age")
+
+	if query == "---":
+		query = 20
+
+	if query:
+		return redirect('search',pk=pk,query=query,religion=religion,age=age)
+
+
 	context = {
 	'unseen_msg_count':unseen_msg_count,
 	'message_list':message_list,
@@ -284,7 +293,7 @@ def profile_detail_view(request,pk):
 	return render(request,"profile_detail.html",context)
 
 
-def search_view(request,pk,query):
+def search_view(request,pk,query,religion,age):
 	profiles = Profile.objects.all()
 	obj1 = profiles.get(pk=pk)
 	query = float(query)*1000
@@ -297,8 +306,79 @@ def search_view(request,pk,query):
 		else: 
 			continue
 
+	# matches of the requested user
+	match_list1 = ChatClass.objects.filter(owner=request.user)
+	match_list2 = ChatClass.objects.filter(opponent=request.user)
+	match_list3 = []
+	match_list3.extend(match_list1)
+	match_list3.extend(match_list2)
+	match_list = [] #it holds the match list
+	for each in match_list3:
+		if each.friends == True:
+			match_list.append(each)
+
+	all_matches = [] # it has all the users that are matched with the logged in.
+	for match in match_list:
+		opponent = match.opponent
+		owner = match.owner
+		if request.user != opponent:
+			us = Profile.objects.get(user=opponent)
+			all_matches.append(us)
+		if request.user != owner:
+			us = Profile.objects.get(user=owner)
+			all_matches.append(us)
+
+	opposite_gender = [] #it stores profiles with opposite gender and same relation
+	for i in matches:
+		if obj1.gender != i.gender:
+			if not i in all_matches:
+				if religion == "---":
+					opposite_gender.append(i)
+				else:
+					if i.religion == religion:
+						opposite_gender.append(i)
+
+	for i in opposite_gender:
+		print(i)
+		print("loop")
+		if age == "---":
+			break
+		elif age == "18-22":
+			if i.get_age() in range(18,22):
+				print("age",i)
+				continue
+			else:
+				print(i,"inside else")
+				opposite_gender.remove(i)
+		elif age == "23-25":
+			if i.get_age() in range(22,25):
+				pass
+			else:
+				opposite_gender.remove(i)
+		elif age == "26-30":
+			if i.get_age() in range(25,30):
+				pass
+			else:
+				opposite_gender.remove(i)
+		elif age == "30-35":
+			if i.get_age() in range(29,35):
+				pass
+			else:
+				opposite_gender.remove(i)
+		elif age == "36-40":
+			if i.get_age() in range(35,40):
+				pass
+			else:
+				opposite_gender.remove(i)
+		else:
+			if i.get_age() in range(39,60):
+				pass
+			else: 
+				opposite_gender.remove(i)
+
+
 	context ={
-			'matches':matches,
+			'matches':opposite_gender,
 			}
 
 	return render(request,"search.html",context)

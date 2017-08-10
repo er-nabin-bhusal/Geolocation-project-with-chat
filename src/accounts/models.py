@@ -3,6 +3,7 @@ import re
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
+from datetime import date
 
 User = get_user_model()
 
@@ -42,6 +43,12 @@ class Profile(models.Model):
 
 	def get_absolute_url(self):
 		return reverse('detail', kwargs={'pk':self.pk})
+
+	def get_age(self):
+		today = date.today()
+		age = today.year - self.birth_date.year
+		age = int(age)
+		return age
 
 
 

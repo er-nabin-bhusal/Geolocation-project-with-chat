@@ -93,7 +93,7 @@
         {% if request.user == instance.user %}
       	<li><a data-toggle="tab" href="#location">Search</a></li>
       	<li><a data-toggle="tab" href="#upload">Photo Upload</a></li>
-      	<li><a data-toggle="tab" href="#notifications">Notifications</a></li>
+      	<!-- <li><a data-toggle="tab" href="#notifications">Notifications</a></li> -->
       	<li><a data-toggle="tab" href="#matches">Matches</a></li>
       	<li><a data-toggle="tab" href="#chats">
       			Chats{% if unseen_msg_count != 0 %}
@@ -145,15 +145,40 @@
 			{% if request.user == instance.user %}
 				<form method="GET" action=''>{% csrf_token %}
 					<div class="row">
-						<div class="col-sm-6 col-sm-offset-3">
+						<div class="col-sm-8 col-sm-offset-2">
+
 							<label for="sel1">Select Radius (In Km):</label>
 						      <select  name="q" value={{ request.GET.q }} class="form-control" id="sel1">
+						      	<option>---</option>
 						        <option>1</option>
 						        <option>2</option>
 						        <option>3</option>
 						        <option>4</option>
 						        <option>5</option>
 						        <option>6</option>
+						      </select><br>
+						      
+						      <label for="religion1">Religion:</label>
+						      <select name="religion" value={{ request.GET.religion }} class="form-control" id="religion1">
+						        <option>---</option>
+						      	<option>Hinduism</option>
+						      	<option>Christian</option>
+						      	<option>Buddhism</option>
+						      	<option>Muslim</option>
+						      	<option>Sikh</option>
+						      	<option>Jain</option>
+
+						      </select><br>
+
+						     <label for="age1">Age-Group:</label>
+						      <select name="age" value={{ request.GET.age }} class="form-control" id="age1">
+						        <option>---</option>
+						      	<option>18-22</option>
+						      	<option>23-25</option>
+						      	<option>26-30</option>
+						      	<option>30-35</option>
+						      	<option>36-40</option>
+						      	<option>Above 40</option>
 
 						      </select>
 					    </div>
@@ -187,9 +212,9 @@
 		</div>
 
 		<!-- all the notifications  -->
-		<div id="notifications" class="tab-pane fade">
+		<!-- <div id="notifications" class="tab-pane fade">
 
-		</div>
+		</div> -->
 
 		<!-- list_ of matches -->
 		<div id="matches" class="tab-pane fade">

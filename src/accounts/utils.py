@@ -110,7 +110,14 @@ def recommendation(user,*args,**kwargs):
 		if not i in all_recommendations:
 			all_recommendations.append(i)
 
-	actual_recommend = []
+	for i in all_recommendations:
+		if i.religion == logged_in_user_profile.religion:
+			temp = i
+			all_recommendations.remove(i)
+			all_recommendations.insert(0,temp)
+
+	actual_recommend = [] #this holds only the three recommendations
+
 	count = 0
 	for i in all_recommendations:
 		count = count + 1

@@ -39,7 +39,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/$', profile_detail_view, name='detail'),
 
     url(r'^(?P<pk>\d+)/edit$', profile_update_view, name='edit'),
-    url(r'^(?P<pk>\d+)/(?P<query>\d+)$', search_view, name='search'),
+    url(r'^(?P<pk>\d+)/(?P<query>\d+)/(?P<religion>[\w-]+)/(?P<age>[\w-]+)$', search_view, name='search'),
     url(r'^chat/', include('chats.urls', namespace='chats')),
     url(r'^(?P<pk>\d+)/', include('photos.urls', namespace='photos')),
     url(r'^$', home_view, name='home'),
